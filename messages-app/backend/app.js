@@ -9,7 +9,7 @@ const app = express();
 
 mongoose
   .connect(
-    "mongodb+srv://alvaro:d2tSEIRJONngDSpi@cluster0.yumcrmv.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://alvaro:d2tSEIRJONngDSpi@cluster0.yumcrmv.mongodb.net/node-angular?retryWrites=true&w=majority"
   )
   .then(() => {
     console.log("Connected to database!");
@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 
 app.post("/api/posts", (req, res, next) => {
   const post = new Post({ title: req.body.title, content: req.body.content });
-  console.log(post);
+  post.save();
   res.status(201).json({ message: "Post added successfully" });
 });
 
