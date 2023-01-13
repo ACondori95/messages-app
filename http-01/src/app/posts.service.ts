@@ -1,6 +1,6 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, map, Subject, throwError } from 'rxjs';
+import { catchError, map, Subject, tap, throwError } from 'rxjs';
 import { Post } from './post.model';
 
 @Injectable({
@@ -16,7 +16,8 @@ export class PostsService {
     this.http
       .post<{ name: string }>(
         'https://ng-complete-guide-dd596-default-rtdb.firebaseio.com/posts.json',
-        postData
+        postData,
+        { observe: 'response' }
       )
       .subscribe(
         (responseData) => {
@@ -52,8 +53,21 @@ export class PostsService {
   }
 
   deletePosts() {
-    return this.http.delete(
-      'https://ng-complete-guide-dd596-default-rtdb.firebaseio.com/posts.json'
-    );
+    return this.http
+      .delete(
+        'https://ng-complete-guide-dd596-default-rtdb.firebaseio.com/posts.json',
+        { observe: 'events' }
+      )
+      .pipe(
+        tap((event) => {
+          console.log(event);
+          if (event.type === HttpEventType.Sent) {
+            // ...
+          }
+          if (event.type === HttpEventType.Response) {
+            console.log(event.body);
+          }
+        })
+      );
   }
 }
