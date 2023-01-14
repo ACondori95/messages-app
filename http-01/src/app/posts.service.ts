@@ -1,4 +1,9 @@
-import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpEventType,
+  HttpHeaders,
+  HttpParams,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Subject, tap, throwError } from 'rxjs';
 import { Post } from './post.model';
@@ -30,10 +35,17 @@ export class PostsService {
   }
 
   fetchPosts() {
+    let searchParams = new HttpParams();
+    searchParams = searchParams.append('print', 'pretty');
+    searchParams = searchParams.append('custom', 'key');
     return this.http
       .get<{ [key: string]: Post }>(
         'https://ng-complete-guide-dd596-default-rtdb.firebaseio.com/posts.json',
-        { headers: new HttpHeaders({ 'Custom-Header': 'Hello' }) }
+        {
+          headers: new HttpHeaders({ 'Custom-Header': 'Hello' }),
+          params: searchParams,
+          responseType: 'json',
+        }
       )
       .pipe(
         map((responseData) => {
@@ -56,7 +68,7 @@ export class PostsService {
     return this.http
       .delete(
         'https://ng-complete-guide-dd596-default-rtdb.firebaseio.com/posts.json',
-        { observe: 'events' }
+        { observe: 'events', responseType: 'text' }
       )
       .pipe(
         tap((event) => {
